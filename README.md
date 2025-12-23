@@ -23,58 +23,69 @@ Program to implement the multivariate linear regression model for predicting the
 Developed by: JANANI R
 RegisterNumber:  25018734
 */
+# Ex:No 4
+#Manual Implementation using Numpy
 import numpy as np
-from sklearn.linear_model import SGDRegressor
-from sklearn.multioutput import MultiOutputRegressor
-from sklearn.model_selection import train_test_split
 
-# Sample dataset
-# Features: [Area (sqft), Num of Rooms, Age of House]
+# ------------------------------
+# Step 1: Sample dataset
+# ------------------------------
+# Features: [Hours Studied, Attendance, Previous Marks]
 X = np.array([
-    [1200, 3, 10],
-    [1500, 4, 5],
-    [800, 2, 20],
-    [2000, 5, 2],
-    [950, 2, 15],
-    [1750, 4, 8]
-])
+    [2, 80, 50],
+    [3, 60, 40],
+    [5, 90, 70],
+    [7, 85, 80],
+    [9, 95, 90]
+], dtype=float)
 
-# Targets: [Price, Occupants]
-y = np.array([
-    [50, 4],
-    [70, 5],
-    [30, 3],
-    [90, 6],
-    [35, 3],
-    [80, 5]
-])
+# Target: Marks Scored
+y = np.array([50, 45, 70, 80, 95], dtype=float)
 
-# Split data
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42
-)
+# ------------------------------
+# Step 2: Feature normalization
+# ------------------------------
+X_mean = X.mean(axis=0)
+X_std = X.std(axis=0)
+X = (X - X_mean) / X_std
 
-# SGD Regressor (wrapped for multi-output)
-model = MultiOutputRegressor(SGDRegressor(max_iter=2000, tol=1e-3))
-model.fit(X_train, y_train)
+# Add bias term (intercept)
+X = np.c_[np.ones(X.shape[0]), X]  # shape becomes (n_samples, n_features + 1)
 
-# Take user input
-area = float(input("Enter house area (sqft): "))
-rooms = int(input("Enter number of rooms: "))
-age = float(input("Enter age of the house: "))
+# ------------------------------
+# Step 3: Initialize weights
+# ------------------------------
+n_features = X.shape[1]
+weights = np.zeros(n_features)
 
-# Predict
-prediction = model.predict([[area, rooms, age]])[0]
+# Hyperparameters
+learning_rate = 0.01
+epochs = 1000
 
-print("Predicted House Price (in lakhs):", round(prediction[0], 2))
-print("Predicted Number of Occupants:", round(prediction[1]))
+# ------------------------------
+# Step 4: Stochastic Gradient Descent
+# ------------------------------
+for epoch in range(epochs):
+    for i in range(X.shape[0]):
+        xi = X[i]
+        yi = y[i]
+        y_pred = np.dot(xi, weights)
+        error = y_pred - yi
+        # Update weights
+        weights -= learning_rate * error * xi
+
+print("Trained Weights (including intercept):", weights)
+
+# ------------------------------
+# Step 5: Make predictions
+# ------------------------------
+y_pred_all = np.dot(X, weights)
+print("Predicted values:", y_pred_all)
 
 ```
 
 ## Output:
-<img width="493" height="116" alt="Screenshot 2025-11-27 101032" src="https://github.com/user-attachments/assets/2b9f194c-6bfb-43a8-a5d2-576e36cf2c66" />
-
-
+<img width="1100" height="87" alt="image" src="https://github.com/user-attachments/assets/387445a8-faeb-4b8d-afb1-4c79aa10504f" />
 
 ## Result:
 Thus the program to implement the multivariate linear regression model for predicting the price of the house and number of occupants in the house with SGD regressor is written and verified using python programming.
